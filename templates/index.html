@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SimplyTalk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body {
+            background: url("{{ url_for('static', filename='bg.png') }}") no-repeat center center fixed;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <div class="header">
+                <div class="logo-title">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+                    <h1 class="pixelify-sans-title">SimplyTalk</h1>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn" id="language-button">Select Language</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="setLanguage('en-US', 'English')">English</a>
+                        <a href="#" onclick="setLanguage('hi-IN', 'Hindi')">Hindi</a>
+                        <a href="#" onclick="setLanguage('ml-IN', 'Malayalam')">Malayalam</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="transcription-container">
+                <div class="transcription-header">
+                    <span class="transcription-title">Simplified Text</span>
+                    <div id="status-indicator" class="status-indicator">Ready</div>
+                </div>
+                <div id="transcription" class="transcription-box">Transcription will appear here...</div>
+            </div>
+            
+            <div class="button-container">
+                <button id="toggle-recording" class="btn primary-btn">
+                    <span class="btn-text">Start Recording</span>
+                    <img id="recording-icon" src="{{ url_for('static', filename='mic.svg') }}" class="btn-icon" alt="Start Recording">
+                </button>
+                
+                <button id="hold-to-speak" class="btn secondary-btn">
+                    <span class="btn-text">Hold to Speak</span>
+                    <img src="{{ url_for('static', filename='mic.svg') }}" class="btn-icon" alt="Hold to Speak">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var socket = io();
+        var mediaRecorder;
+        var holdMediaRecorder;
+        var audioChunks = [];
+        var holdAudioChunks = [];
+        var recordingInterval;
+        var chunkDuration = 9000; // Set the chunk duration in milliseconds
+        var selectedLanguage = 'en-US'; // Default language
+        var statusIndicator = document.getElementById('status-indicator');
+        var dropdownContent = document.querySelector('.dropdown-content');
+        var languageButton = document.getElementById('language-button');
+        var isRecording = false;
+        var toggleButton = document.getElementById('toggle-recording');
+        var recordingIcon = document.getElementById('recording-icon');
+        var holdButton = document.getElementById('hold-to-speak');
+        var stream;
+
+        // Toggle dropdown on language button click
+        languageButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (dropdownContent.style.display === "block") {
+                dropdownContent.style.display = "none";
+            } else {
+                dropdownContent.style.display = "block";
+            }
+        });
+
+        function setLanguage(language, languageName) {
+            selectedLanguage = language;
+            document.getElementById('language-button').innerText = languageName;
+            dropdownContent.style.display = "none";
+        }
+
+        socket.on('simplified_text', function(data) {
+            document.getElementById('transcription').innerText = data.text;
+            updateStatus("Ready", "ready");
+        });
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+            updateStatus("Connected", "ready");
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+            updateStatus("Disconnected", "error");
+        });
+
+        toggleButton.addEventListener('click', function() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    updateStatus("Recording...", "recording");
+                    
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+                    mediaRecorder.ondataavailable = function(event) {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = function() {
+                        statusIndicator.innerText = "Processing...";
+                        statusIndicator.className = "status-indicator processing";
+                        
+                        var audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        audioChunks = [];
+                        var reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = function() {
+                            var base64String = reader.result.split(',')[1];
+                            socket.emit('audio_data', { audio: base64String, language: selectedLanguage });
+                        };
+                    };
+
+                    recordingInterval = setInterval(function() {
+                        if (mediaRecorder.state === "recording") {
+                            mediaRecorder.stop();
+                        }
+                        mediaRecorder.start();
+                    }, chunkDuration);
+
+                    mediaRecorder.start();
+                    
+                    // Update UI to show recording state
+                    isRecording = true;
+                    toggleButton.querySelector('.btn-text').textContent = 'Stop Recording';
+                    recordingIcon.src = "{{ url_for('static', filename='micoff.svg') }}";
+                    toggleButton.classList.remove('primary-btn');
+                    toggleButton.classList.add('recording-active');
+                })
+                .catch(function(error) {
+                    console.error('Error accessing microphone:', error);
+                    updateStatus("Microphone Error", "error");
+                    holdButton.classList.remove('recording-active');
+                });
+        }
+
+        function stopRecording() {
+            clearInterval(recordingInterval);
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+            
+            // Update UI to show stopped state
+            isRecording = false;
+            toggleButton.querySelector('.btn-text').textContent = 'Start Recording';
+            recordingIcon.src = "{{ url_for('static', filename='mic.svg') }}";
+            toggleButton.classList.remove('recording-active');
+            toggleButton.classList.add('primary-btn');
+        }
+        
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn') && !event.target.closest('.dropdown-content')) {
+                dropdownContent.style.display = "none";
+            }
+        }
+
+        // Hold-to-speak functionality
+        holdButton.addEventListener('mousedown', startHoldRecording);
+        holdButton.addEventListener('touchstart', startHoldRecording);
+        holdButton.addEventListener('mouseup', stopHoldRecording);
+        holdButton.addEventListener('touchend', stopHoldRecording);
+        holdButton.addEventListener('mouseleave', stopHoldRecording);
+        
+        function startHoldRecording(e) {
+            e.preventDefault(); // Prevent default behavior for touch events
+            
+            if (isRecording) {
+                stopRecording(); // Stop regular recording if it's in progress
+            }
+            
+            updateStatus("Hold & Speak...", "recording");
+            
+            holdButton.classList.add('recording-active');
+            
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    holdMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    holdAudioChunks = [];
+                    
+                    holdMediaRecorder.ondataavailable = function(event) {
+                        holdAudioChunks.push(event.data);
+                    };
+                    
+                    holdMediaRecorder.onstop = function() {
+                        if (holdAudioChunks.length === 0) return;
+                        
+                        updateStatus("Processing...", "processing");
+                        
+                        var audioBlob = new Blob(holdAudioChunks, { type: 'audio/webm' });
+                        var reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = function() {
+                            var base64String = reader.result.split(',')[1];
+                            socket.emit('audio_data', { 
+                                audio: base64String, 
+                                language: selectedLanguage,
+                                continuous: true // Flag for continuous audio
+                            });
+                        };
+                    };
+                    
+                    holdMediaRecorder.start();
+                })
+                .catch(function(error) {
+                    console.error('Error accessing microphone:', error);
+                    updateStatus("Microphone Error", "error");
+                    holdButton.classList.remove('recording-active');
+                });
+        }
+        
+        function stopHoldRecording(e) {
+            if (e) e.preventDefault(); // Prevent default behavior for touch events
+            
+            if (holdMediaRecorder && holdMediaRecorder.state === "recording") {
+                holdMediaRecorder.stop();
+                
+                // Stop all tracks from the stream to release the microphone
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+            }
+            
+            holdButton.classList.remove('recording-active');
+        }
+
+        // Helper function to update status with consistent styling
+        function updateStatus(text, state) {
+            statusIndicator.innerText = text;
+            statusIndicator.className = "status-indicator " + state;
+        }
+    </script>
+</body>
+</html>

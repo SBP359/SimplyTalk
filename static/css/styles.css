@@ -1,0 +1,429 @@
+:root {
+    --primary-color: #00796b;
+    --primary-dark: #004d40;
+    --primary-light: #b2dfdb;
+    --background-light: #e0f2f1;
+    --text-dark: #263238;
+    --text-light: #ffffff;
+    --error-color: #e53935;
+    --warning-color: #ff9800;
+    --success-color: #4caf50;
+    --shadow-color: rgba(0, 0, 0, 0.12);
+    --animation-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--text-dark);
+}
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    backdrop-filter: blur(10px);
+    transition: all var(--animation-speed) ease;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    margin-right: 15px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform var(--animation-speed) ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.pixelify-sans-title {
+    color: var(--primary-color);
+    font-size: 32px;
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 1px 1px 0px var(--shadow-color);
+}
+
+/* Transcription Area */
+.transcription-container {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.transcription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.transcription-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.status-indicator {
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: #e0e0e0;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: all var(--animation-speed) ease;
+}
+
+.status-indicator.ready {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.status-indicator.recording {
+    background-color: var(--warning-color);
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.processing {
+    background-color: var(--primary-color);
+    color: white;
+    animation: processing-pulse 1.5s infinite;
+}
+
+@keyframes processing-pulse {
+    0% {
+        background-color: var(--primary-color);
+    }
+    50% {
+        background-color: var(--primary-dark);
+    }
+    100% {
+        background-color: var(--primary-color);
+    }
+}
+
+.status-indicator.error {
+    background-color: var(--error-color);
+    color: white;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.transcription-box {
+    border: 1px solid var(--primary-light);
+    padding: 25px;
+    border-radius: 15px;
+    background-color: var(--background-light);
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 18px;
+    color: var(--text-dark);
+    text-align: left;
+    line-height: 1.6;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all var(--animation-speed) ease;
+}
+
+/* Button Styles */
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 50px;
+    border: none;
+    padding: 10px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all var(--animation-speed) ease;
+    color: var(--text-light);
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    overflow: hidden;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 0 var(--primary-dark);
+}
+
+.secondary-btn {
+    background-color: #455a64;
+    box-shadow: 0 4px 0 #263238;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 transparent;
+}
+
+.btn:disabled, .btn.disabled {
+    background-color: #b0bec5;
+    box-shadow: 0 4px 0 #90a4ae;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn.active {
+    background-color: var(--error-color);
+    box-shadow: 0 4px 0 #b71c1c;
+}
+
+.btn-text {
+    transition: all var(--animation-speed) ease;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-icon {
+    width: 22px;
+    height: 22px;
+    margin-left: 10px;
+    transition: all var(--animation-speed) ease;
+    position: relative;
+    z-index: 1;
+}
+
+.btn:hover .btn-text {
+    transform: translateX(-5px);
+}
+
+.btn:hover .btn-icon {
+    transform: translateX(5px);
+}
+
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+}
+
+.dropbtn {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 10px 16px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 4px 0 var(--primary-dark);
+    transition: all var(--animation-speed) ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.dropbtn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.dropbtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 transparent;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.dropdown-content a {
+    color: var(--text-dark);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color var(--animation-speed) ease;
+    font-weight: 400;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: var(--primary-color);
+}
+
+/* Button Animation for Recording */
+@keyframes recording-pulse {
+    0% {
+        box-shadow: 0 4px 0 #b71c1c, 0 0 0 rgba(229, 57, 53, 0);
+    }
+    50% {
+        box-shadow: 0 4px 0 #b71c1c, 0 0 20px rgba(229, 57, 53, 0.4);
+    }
+    100% {
+        box-shadow: 0 4px 0 #b71c1c, 0 0 0 rgba(229, 57, 53, 0);
+    }
+}
+
+.recording-active {
+    background-color: var(--error-color) !important;
+    animation: recording-pulse 2s infinite;
+}
+
+/* Hold to speak button style */
+#hold-to-speak {
+    position: relative;
+    overflow: hidden;
+    background-color: #5c6bc0;
+    box-shadow: 0 4px 0 #303f9f;
+    transition: all 0.15s ease; /* Faster transition for better tactile feedback */
+}
+
+#hold-to-speak:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 transparent;
+    background-color: #3949ab;
+}
+
+#hold-to-speak.recording-active {
+    background-color: var(--error-color);
+    box-shadow: 0 0 0 transparent;
+    transform: translateY(4px);
+    animation: recording-pulse 1.5s infinite;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 0 15px;
+    }
+    
+    .header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pixelify-sans-title {
+        font-size: 28px;
+    }
+    
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 180px;
+    }
+    
+    .transcription-box {
+        min-height: 150px;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .pixelify-sans-title {
+        font-size: 24px;
+    }
+    
+    .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
+    
+    .transcription-title, .status-indicator {
+        font-size: 14px;
+    }
+    
+    .transcription-box {
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+}
