@@ -9,12 +9,13 @@ SimplyTalk is a real-time web application that simplifies spoken or typed senten
 🔊 Speech-to-Text + Gemini AI  
 - Speak or type input.  
 - Converts speech (WebM audio) to text using `speech_recognition`.  
-- Uses Gemini AI to simplify the text (max 18 words, same language, same person/perspective).  
+- Uses Gemini AI to simplify the text.  
 
 🤟 Indian Sign Language (ISL) GIFs  
 - Matches simplified text or keywords to ISL gesture GIFs.  
-- Supports explicit GIF tagging (e.g., `<hello.gif>`) or automatic keyword matching.  
-- Web interface to upload new GIFs and assign keyword mappings.  
+- Supports explicit GIF tagging or automatic keyword matching.  
+- Web interface to upload new GIFs and assign keyword mappings.
+- Could include 3D ISL/ASL Avatar for more better and comfort communication  
 
 ⚡ Real-Time Experience  
 - Real-time client-server interaction using Flask-SocketIO.  
@@ -28,15 +29,26 @@ SimplyTalk is a real-time web application that simplifies spoken or typed senten
 
 ## 🧠 Architecture Overview
 
-[User]  
- ↓ speaks or types  
-[Frontend (HTML/JS)] ←→ [Flask + Flask-SocketIO]  
- ↓                        ↓  
-audio / text         Gemini API, SpeechRecognition  
- ↓                        ↓  
-simplified text + matched GIFs  
- ↓  
-[UI Display with ISL GIFs]  
+[👤 User]
+  ↓ Speaks into mic or types a sentence in the text box
+
+[🌐 Frontend (HTML + JS)]
+  ↔ Communicates with backend using WebSockets via Flask-SocketIO
+  ↓ Sends audio or typed text to server
+
+[🧠 Backend (Flask App)]
+  ├─ If audio: Converts speech to text using SpeechRecognition
+  ├─ If text: Sends it directly to Gemini AI
+  ↓
+Gemini AI simplifies the text (≤ 18 words, no change in meaning)
+
+[🔎 GIF Matching Engine]
+  ↓
+Searches for ISL GIFs that match simplified keywords or tags
+
+[📲 Frontend UI]
+  ↓
+Displays simplified sentence + matched ISL GIFs in real time 
 
 ---
 
@@ -46,7 +58,7 @@ simplified text + matched GIFs
 - Flask-SocketIO – Real-time WebSocket communication  
 - SpeechRecognition – Converts audio to text  
 - pydub + ffmpeg – Handles audio conversion  
-- google-generativeai – Gemini Pro integration  
+- google-generativeai – Gemini AI LLM integration (with API, available at cloud platforms like Google AI Studio, Vertex AI etc.)  
 - Flask-CORS – Enables cross-origin frontend/backend  
 - eventlet/threading – Async server support (depends on Python version)  
 
@@ -99,7 +111,7 @@ SimplyTalk/
 
 ## 🔐 Security Notes
 
-- Gemini API key is hardcoded → Use environment variables!  
+- Gemini API key is hardcoded → Use environment variables or just use as a variable for temporary testing if you are LAZY!  
 - No authentication → Anyone can upload GIFs.  
 - CORS is fully open → Restrict in production.  
 
@@ -107,7 +119,8 @@ SimplyTalk/
 
 ## 💡 Future Enhancements
 
-- Add login/authentication for GIF management.  
+- Add login/authentication for GIF management.
+- 3D ISL/ASL Avatar  
 - Smarter GIF matching using NLP or embeddings.  
 - Multi-language support.  
 - Move GIF mappings to a database for scale.  
