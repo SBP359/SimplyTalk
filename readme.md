@@ -123,6 +123,24 @@ SimplyTalk/
 | 3.13 or higher | ⚠️ Partial   | Falls back to threading (slower WebSocket perf) |
 
 ---
+<h2 align="center">📸 SimplyTalk Web UI Showcase</h2>
+
+<h3 align="center">🧠 Main App Interface – Real-Time Speech Simplification</h3>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SBP359/SBP359/135006194d56104de07f8347e4d62c260b42282f/simplytalk/1.jpeg" width="600"/>
+</p>
+<p align="center"><i>Main web interface of SimplyTalk — supports speech-to-text, Gemini AI simplification, and real-time ISL GIF suggestions.</i></p>
+
+<hr/>
+
+<h3 align="center">🖼️ GIF Management Interface – Add New ISL Mappings</h3>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SBP359/SBP359/135006194d56104de07f8347e4d62c260b42282f/simplytalk/2.jpeg" width="600"/>
+</p>
+<p align="center"><i>Admin page to upload new Indian Sign Language (ISL) GIFs and map them to keywords — no database needed.</i></p>
+
 
 <h2 align="center">🖼️ SimplyTalk on Smartwatch (Wearable UI Demo)</h2>
 
