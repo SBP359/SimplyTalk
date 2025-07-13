@@ -139,7 +139,7 @@ SimplyTalk/
 <p align="center">
   <img src="https://raw.githubusercontent.com/SBP359/SBP359/135006194d56104de07f8347e4d62c260b42282f/simplytalk/2.jpeg" width="600"/>
 </p>
-<p align="center"><i>Admin page to upload new Indian Sign Language (ISL) GIFs and map them to keywords — no database needed.</i></p>
+<p align="center"><i>Admin page to upload new Indian Sign Language (ISL) GIFs and map them to keywords </i></p>
 
 
 <h2 align="center">🖼️ SimplyTalk on Smartwatch (Wearable UI Demo)</h2>
