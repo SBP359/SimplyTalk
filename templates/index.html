@@ -14,6 +14,38 @@
             background: url("{{ url_for('static', filename='bg.png') }}") no-repeat center center fixed;
             background-size: cover;
         }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .gif-link {
+            display: inline-block;
+            background-color: #2a2a72;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .gif-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .gif-item {
+            max-width: 220px;
+            max-height: 220px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -24,12 +56,14 @@
                     <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
                     <h1 class="pixelify-sans-title">SimplyTalk</h1>
                 </div>
-                <div class="dropdown">
-                    <button class="dropbtn" id="language-button">Select Language</button>
-                    <div class="dropdown-content">
-                        <a href="#" onclick="setLanguage('en-US', 'English')">English</a>
-                        <a href="#" onclick="setLanguage('hi-IN', 'Hindi')">Hindi</a>
-                        <a href="#" onclick="setLanguage('ml-IN', 'Malayalam')">Malayalam</a>
+                <div class="header-controls">
+                    <div class="dropdown">
+                        <button class="dropbtn" id="language-button">Select Language</button>
+                        <div class="dropdown-content">
+                            <a href="#" onclick="setLanguage('en-US', 'English')">English</a>
+                            <a href="#" onclick="setLanguage('hi-IN', 'Hindi')">Hindi</a>
+                            <a href="#" onclick="setLanguage('ml-IN', 'Malayalam')">Malayalam</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -40,6 +74,7 @@
                     <div id="status-indicator" class="status-indicator">Ready</div>
                 </div>
                 <div id="transcription" class="transcription-box">Transcription will appear here...</div>
+                <div id="gif-container" class="gif-container"></div>
             </div>
             
             <div class="button-container">
@@ -93,6 +128,24 @@
         socket.on('simplified_text', function(data) {
             document.getElementById('transcription').innerText = data.text;
             updateStatus("Ready", "ready");
+            
+            // Handle GIFs
+            const gifContainer = document.getElementById('gif-container');
+            gifContainer.innerHTML = ''; // Clear previous GIFs
+            
+            if (data.gifs && data.gifs.length > 0) {
+                data.gifs.forEach(function(gifName) {
+                    const gifUrl = "{{ url_for('static', filename='gif/') }}" + gifName;
+                    const gifElement = document.createElement('img');
+                    gifElement.src = gifUrl;
+                    gifElement.alt = gifName;
+                    gifElement.className = 'gif-item';
+                    gifContainer.appendChild(gifElement);
+                });
+                gifContainer.style.display = 'flex';
+            } else {
+                gifContainer.style.display = 'none';
+            }
         });
 
         socket.on('connect', function() {
