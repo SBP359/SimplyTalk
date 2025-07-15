@@ -23,8 +23,8 @@ else:
 
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode=async_mode)
 
-# api_key = os.getenv("GOOGLE_API_KEY")  # Use environment variable for API key
-api_key = "api_key_here"  # Replace with your actual API key
+api_key = os.getenv("GOOGLE_API_KEY")  # Use environment variable for API key
+#api_key = "api_key_here"  # Replace with your actual API key
 genai.configure(api_key=api_key)
 
 # Directory for storing GIF files
